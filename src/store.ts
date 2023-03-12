@@ -1,10 +1,27 @@
 import {writable} from "svelte/store";
 
-export type App = {
-    uuid: string | undefined,
-    data: any | undefined,
+export interface App {
+    uuid?: string,
+    data: Component,
     name: string,
     description: string,
+}
+
+export interface Component {
+    pos: {
+        x: number,
+        y: number,
+    },
+    size: {
+        width: number,
+        height: number,
+    },
+    type: "container" | "note" | "image" | "video",
+    uuid: string,
+    title?: string,
+    content?: string,
+    components?: Component[],
+    src?: string,
 }
 
 export const apps = writable<App[]>([]);
@@ -16,6 +33,11 @@ export function create(app: App) {
             x: 0,
             y: 0,
         },
+        size: {
+            width: 160,
+            height: 160,
+        },
+        uuid: Math.random().toString(36).substr(2, 9),
         title: "main",
         type: "container",
         components: []
@@ -35,27 +57,3 @@ export function update(uuid: string, data: any) {
         return app;
     }));
 }
-
-create({
-    uuid: "test",
-    name: "App 1",
-    description: "Congrats, here is your first app!",
-    data: {
-        pos: {
-            x: 0,
-            y: 0,
-        },
-        title: "main",
-        type: "container",
-        components: [
-            {
-                pos: {
-                    x: 0,
-                    y: 0,
-                },
-                type: "note",
-                content: "This is a note",
-            }
-        ]
-    }
-})

@@ -5,10 +5,9 @@
 
     export let path: string;
     export let app: App;
-    let textarea;
 
     let component: any;
-
+    let videoType: string;
     function getComponent() {
         component = app.data;
         if (path === "" || !path) return;
@@ -23,12 +22,19 @@
 
     onMount(() => {
         getComponent();
+        if (component.src.startsWith("data")){
+            videoType = component.src.split(";")[0].split("/").pop();
+        } else {
+            videoType = component.src.split(".").pop();
+        }
     });
 </script>
 
-<Component path={path} app={app} focus={() => {textarea.focus()}}>
+<Component path={path} app={app}>
     {#if component}
-        <textarea class="w-full h-full bg-transparent p-2" style="resize: none; overflow: hidden" bind:this={textarea}
-                  bind:value={component.content}></textarea>
+        <video controls class="w-full h-full rounded">
+            <source src={component.src} type="video/{videoType}">
+            Your browser does not support the video tag.
+        </video>
     {/if}
 </Component>

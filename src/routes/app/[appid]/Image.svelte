@@ -5,10 +5,8 @@
 
     export let path: string;
     export let app: App;
-    let textarea;
 
     let component: any;
-
     function getComponent() {
         component = app.data;
         if (path === "" || !path) return;
@@ -23,12 +21,18 @@
 
     onMount(() => {
         getComponent();
+        if (component.size.height === -1) {
+            let image = new Image();
+            image.src = component.src;
+            image.onload = () => {
+                component.size.height = (image.height / image.width) * component.size.width;
+            }
+        }
     });
 </script>
 
-<Component path={path} app={app} focus={() => {textarea.focus()}}>
+<Component path={path} app={app}>
     {#if component}
-        <textarea class="w-full h-full bg-transparent p-2" style="resize: none; overflow: hidden" bind:this={textarea}
-                  bind:value={component.content}></textarea>
+        <img src={component.src} alt="image" class="rounded" style="width: 100%; height: 100%; object-fit: cover">
     {/if}
 </Component>
