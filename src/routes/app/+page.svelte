@@ -2,7 +2,7 @@
     import {apps, create} from "../../store";
     import AppViewer from "./AppViewer.svelte";
     import {onMount} from "svelte";
-    import {getDBUser, saveApps, supabaseClient} from "$lib/database";
+    import {getDBUser, saveApps} from "$lib/database";
 
     function genUUID() {
         let uuid = Math.random().toString(36).substr(2, 9)
@@ -49,7 +49,7 @@
         if (error) {
             console.log(error);
             return;
-        } else {
+        } else if (data) {
             loggedIn = true;
         }
         loading = false;

@@ -56,10 +56,9 @@
             console.log(error);
         } else {
             await updateUser();
+            $apps = [];
             await goto('/')
         }
-
-        $apps = [];
     }
 </script>
 
