@@ -45,6 +45,8 @@ export async function createDBUser(table: string, user: any) {
 }
 
 export async function saveApps(apps: any) {
+    if (apps.length === 0) return {data: null};
+
     const {data: session, error: sessionError} = await supabaseClient.auth.getSession();
 
     if (sessionError) {

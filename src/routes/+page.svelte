@@ -22,7 +22,7 @@
             </div>
 
             <div class="form-control mt-16">
-                <a class="btn btn-primary" href="/login">Start you journey</a>
+                <a class="btn btn-primary" href="/login">Start your journey</a>
             </div>
         </div>
     </div>

@@ -5,6 +5,7 @@
 
     export let path: string;
     export let app: App;
+    export let addState;
 
     let component: any;
     let videoType: string;
@@ -30,7 +31,7 @@
     });
 </script>
 
-<Component path={path} app={app}>
+<Component path={path} app={app} addState={addState}>
     {#if component}
         <video controls class="w-full h-full rounded">
             <source src={component.src} type="video/{videoType}">

@@ -5,6 +5,7 @@
 
     export let path: string;
     export let app: App;
+    export let addState;
 
     let component: any;
     function getComponent() {
@@ -31,7 +32,7 @@
     });
 </script>
 
-<Component path={path} app={app}>
+<Component path={path} app={app} addState={addState}>
     {#if component}
         <img src={component.src} alt="image" class="rounded" style="width: 100%; height: 100%; object-fit: cover">
     {/if}

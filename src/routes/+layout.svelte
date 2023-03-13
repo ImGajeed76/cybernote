@@ -11,7 +11,8 @@
         if (getError) {
             const {error: createError} = await createDBUser("Apps", {
                 email: session.session.user.email,
-                apps: {apps: [
+                apps: {
+                    apps: [
                         {
                             uuid: Math.random().toString(36).substr(2, 9),
                             name: "App 1",
@@ -31,7 +32,8 @@
                                 components: []
                             }
                         }
-                    ]}
+                    ]
+                }
             })
 
             if (createError) {
@@ -39,7 +41,7 @@
             } else {
                 window.location.reload()
             }
-        } else {
+        } else if (getData) {
             $apps = getData.apps.apps
         }
     })

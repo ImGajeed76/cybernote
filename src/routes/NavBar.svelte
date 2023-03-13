@@ -32,12 +32,6 @@
 
     page.subscribe(async () => {
         isAbsolute = $page.url.pathname.startsWith("/login") || $page.url.pathname.startsWith("/app/");
-
-        $apps = [...$apps];
-        const {error} = await saveApps($apps);
-        if (error) {
-            console.log(error);
-        }
     })
 
     onMount(async () => {
@@ -51,13 +45,18 @@
     })
 
     async function logout() {
+        const {error: saveError} = await saveApps($apps);
+
+        if (saveError) {
+            console.log(saveError);
+        }
+
         const {error} = await supabaseClient.auth.signOut();
         if (error) {
             console.log(error);
         } else {
             await updateUser();
-            $apps = [];
-            await goto('/')
+            window.location.reload();
         }
     }
 </script>

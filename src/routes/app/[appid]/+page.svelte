@@ -10,10 +10,19 @@
     import Video from "./Video.svelte";
     import {saveApps} from "../../../lib/database";
 
+
     let app = $apps.find(app => app.uuid === $page.params.appid);
     apps.subscribe(apps => {
         app = apps.find(app => app.uuid === $page.params.appid)
     });
+
+    let lastAppStates = [];
+    let maxAppStates = 10;
+
+    function addState() {
+        lastAppStates.push({...app});
+        if (lastAppStates.length > maxAppStates) lastAppStates.shift();
+    }
 
     let path = "";
 
@@ -36,8 +45,8 @@
                 uuid: Math.random().toString(36).substr(2, 9),
                 content: "",
                 pos: {
-                    x: -app.data.pos.x,
-                    y: -app.data.pos.y
+                    x: (window.screen.availWidth / 2) - app.data.pos.x,
+                    y: (window.screen.availHeight / 2) - app.data.pos.y
                 },
                 size: {
                     width: 200,
@@ -45,6 +54,7 @@
                 }
             });
             app = {...app};
+            addState();
         }
     }
 
@@ -65,6 +75,7 @@
                 });
                 app = {...app};
             }
+            addState();
         };
         reader.onerror = (error) => {
             console.log('Error: ', error);
@@ -88,6 +99,7 @@
                 });
                 app = {...app};
             }
+            addState();
         };
         reader.onerror = (error) => {
             console.log('Error: ', error);
@@ -118,6 +130,8 @@
     }
 
     function initDragAndDrop() {
+        if (!bg) return;
+
         const prevents = (event) => {
             event.preventDefault();
 
@@ -126,8 +140,8 @@
 
             if (event.type === "drop") {
                 let pos = {
-                    x: event.clientX - (window.screen.availWidth / 2) - app.data.pos.x,
-                    y: event.clientY - (window.screen.availHeight / 2) - app.data.pos.y
+                    x: event.clientX - app.data.pos.x,
+                    y: event.clientY - app.data.pos.y
                 }
 
                 const dataTransfer = event.dataTransfer;
@@ -156,7 +170,6 @@
     }
 
     async function save() {
-        $apps = [...$apps];
         const {error} = await saveApps($apps);
         if (error) console.log(error);
         else lastSave = Date.now();
@@ -171,7 +184,6 @@
         });
 
         setInterval(() => {
-            $apps = [...$apps];
             saveAgo = Math.round((Date.now() - lastSave) / 1000);
         }, 1000);
 
@@ -201,8 +213,21 @@
         })
     }
 
+    function initBack() {
+        document.addEventListener("keydown", (event) => {
+            if (event.ctrlKey && event.key === "z") {
+                event.preventDefault();
+                if (lastAppStates.length > 1) {
+                    lastAppStates.pop();
+                    app.data = {...lastAppStates[lastAppStates.length - 1].data};
+                }
+            }
+        })
+    }
+
     onMount(async () => {
         if (!app) await goto("/app");
+        if (!bg) return;
 
         initDragAndDrop();
         updateApps();
@@ -216,6 +241,8 @@
 
         initSave();
         initZoom();
+        initBack();
+        addState();
 
         document.body.style.overflow = "hidden";
     });
@@ -226,11 +253,11 @@
     {#if app}
         {#each app.data.components as component}
             {#if component.type === "note"}
-                <Note app={app} path={path+component.uuid+"/"}/>
+                <Note app={app} path={path+component.uuid+"/"} addState={addState}/>
             {:else if component.type === "image"}
-                <Image app={app} path={path+component.uuid+"/"}/>
+                <Image app={app} path={path+component.uuid+"/"} addState={addState}/>
             {:else if component.type === "video"}
-                <Video app={app} path={path+component.uuid+"/"}/>
+                <Video app={app} path={path+component.uuid+"/"} addState={addState}/>
             {/if}
         {/each}
     {/if}
