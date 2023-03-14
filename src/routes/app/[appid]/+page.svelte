@@ -27,6 +27,7 @@
     let path = "";
 
     let bg;
+    let bgPattern;
 
     let lastSave = Date.now();
     let saveInterval = 60000;
@@ -38,15 +39,15 @@
         console.log("add container");
     }
 
-    function addNote() {
+    function addNote(file?, pos?) {
         if (app.data.components) {
             app.data.components.push({
                 type: "note",
                 uuid: Math.random().toString(36).substr(2, 9),
-                content: "",
+                content: file?.content || "",
                 pos: {
-                    x: (window.screen.availWidth / 2) - app.data.pos.x,
-                    y: (window.screen.availHeight / 2) - app.data.pos.y
+                    x: (pos?.x || (window.screen.availWidth / 2) - app.data.pos.x) - 100,
+                    y: (pos?.y || (window.screen.availHeight / 2) - app.data.pos.y) - 100
                 },
                 size: {
                     width: 200,
@@ -117,12 +118,20 @@
         let appStartY = app.data.pos.y;
 
         document.onmousemove = (event) => {
+            event.preventDefault();
+            if (event.which !== 3) return;
             app.data.pos.x = appStartX + event.clientX - startX;
             app.data.pos.y = appStartY + event.clientY - startY;
+
+            requestAnimationFrame(() => {
+                bgPattern.style.backgroundPosition = `${app.data.pos.x}px ${app.data.pos.y}px`;
+            })
+
             bg.style.cursor = "grabbing";
         }
 
-        document.onmouseup = () => {
+        document.onmouseup = (event) => {
+            event.preventDefault();
             document.onmouseup = null;
             document.onmousemove = null;
             bg.style.cursor = "context-menu";
@@ -146,6 +155,7 @@
 
                 const dataTransfer = event.dataTransfer;
                 const files = [...dataTransfer.files];
+                const data = dataTransfer.getData("text/plain");
 
                 files.forEach(file => {
                     if (file.type.startsWith("image/")) {
@@ -155,6 +165,10 @@
                         addVideo(file, pos);
                     }
                 })
+
+                if (data && data === "note") {
+                    addNote({}, pos);
+                }
             }
         }
 
@@ -233,10 +247,14 @@
         updateApps();
 
         bg.onmousedown = (event) => {
+            event.preventDefault();
             if (event.target === bg) drag(event)
         };
         bg.onclick = (event) => {
             if (event.target === bg) document.activeElement.blur();
+        }
+        bg.oncontextmenu = (event) => {
+            event.preventDefault();
         }
 
         initSave();
@@ -249,6 +267,7 @@
 </script>
 
 <div>
+    <div class="bg-pattern w-screen h-screen absolute" bind:this={bgPattern}></div>
     <div class="absolute w-screen h-screen duration-200" bind:this={bg}></div>
     {#if app}
         {#each app.data.components as component}
@@ -264,3 +283,10 @@
     <AppSideBar addContainer={addContainer} addNote={addNote}/>
     <p class="fixed left-5 bottom-5 text-white/30">Last save: {saveAgo} seconds ago</p>
 </div>
+
+<style>
+    .bg-pattern {
+        background-image: linear-gradient(0deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px), linear-gradient(90deg, rgba(0, 0, 0, 0.1) 1px, transparent 1px);
+        background-size: 50px 50px;
+    }
+</style>

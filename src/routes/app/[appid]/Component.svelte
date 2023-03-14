@@ -102,6 +102,7 @@
             component.pos.x = (divStartX + event.clientX - startX);
             component.pos.y = (divStartY + event.clientY - startY);
             document.body.style.cursor = 'grabbing';
+            updateComponent();
         };
 
         document.onmouseup = () => {
@@ -163,14 +164,19 @@
             }
         };
         div.onclick = () => {
-            enable();
-            if (div === document.activeElement) return;
-            focus();
+            if (div !== document.activeElement) {
+                disable();
+                div.focus();
+                div.style.cursor = 'context-menu';
+            } else {
+                div.blur();
+                enable();
+                focus();
+            }
         };
         div.ondblclick = () => {
-            disable();
-            div.focus();
-            div.style.cursor = 'context-menu';
+            enable();
+            focus();
         };
         div.onmouseenter = (event) => {
             event.preventDefault();

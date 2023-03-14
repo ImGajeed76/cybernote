@@ -8,6 +8,7 @@
     export let addState;
 
     let component: any;
+    let image;
     function getComponent() {
         component = app.data;
         if (path === "" || !path) return;
@@ -29,11 +30,15 @@
                 component.size.height = (image.height / image.width) * component.size.width;
             }
         }
+        setTimeout(() => {
+            if (!image) return;
+            image.ondragstart = (event) => {event.preventDefault()};
+        }, 100);
     });
 </script>
 
 <Component path={path} app={app} addState={addState}>
     {#if component}
-        <img src={component.src} alt="image" class="rounded" style="width: 100%; height: 100%; object-fit: cover">
+        <img src={component.src} alt="image" class="rounded" style="width: 100%; height: 100%; object-fit: cover" bind:this={image}>
     {/if}
 </Component>

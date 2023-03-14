@@ -1,8 +1,25 @@
 <script lang="ts">
+    import {onMount} from "svelte";
+    import NoteImage from '$lib/assets/NoteImage.png';
+
     export let addContainer: () => void;
     export let addNote: () => void;
-</script>
 
+    let note;
+
+    onMount(() => {
+        const img = new Image(200, 200);
+        img.src = NoteImage;
+
+        note.draggable = true;
+        note.ondragstart = (e) => {
+            console.log("dragging");
+            e.dataTransfer.setData("text/plain", "note");
+
+            e.dataTransfer.setDragImage(img, 100, 100)
+        }
+    })
+</script>
 
 <div class="absolute h-screen grid items-center">
     <div class="rounded-box bg-neutral w-20 h-[60vh] m-10 shadow-2xl">
@@ -17,7 +34,7 @@
             </svg>
         </button>
 
-        <button class="w-full p-5 rounded hover:shadow-2xl duration-100 hover:p-6" on:click={addNote}>
+        <button class="w-full p-5 rounded hover:shadow-2xl duration-100 hover:p-6" on:click={addNote} bind:this={note}>
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
