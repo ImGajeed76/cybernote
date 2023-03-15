@@ -28,6 +28,7 @@
 
     let bg;
     let bgPattern;
+    let appContainer;
 
     let lastSave = Date.now();
     let saveInterval = 60000;
@@ -119,12 +120,14 @@
 
         document.onmousemove = (event) => {
             event.preventDefault();
-            if (event.which !== 3) return;
             app.data.pos.x = appStartX + event.clientX - startX;
             app.data.pos.y = appStartY + event.clientY - startY;
 
             requestAnimationFrame(() => {
                 bgPattern.style.backgroundPosition = `${app.data.pos.x}px ${app.data.pos.y}px`;
+
+                appContainer.style.left = `${app.data.pos.x}px`;
+                appContainer.style.top = `${app.data.pos.y}px`;
             })
 
             bg.style.cursor = "grabbing";
@@ -263,23 +266,28 @@
         addState();
 
         document.body.style.overflow = "hidden";
+
+        appContainer.style.left = `${app.data.pos.x}px`;
+        appContainer.style.top = `${app.data.pos.y}px`;
     });
 </script>
 
 <div>
     <div class="bg-pattern w-screen h-screen absolute" bind:this={bgPattern}></div>
     <div class="absolute w-screen h-screen duration-200" bind:this={bg}></div>
-    {#if app}
-        {#each app.data.components as component}
-            {#if component.type === "note"}
-                <Note app={app} path={path+component.uuid+"/"} addState={addState}/>
-            {:else if component.type === "image"}
-                <Image app={app} path={path+component.uuid+"/"} addState={addState}/>
-            {:else if component.type === "video"}
-                <Video app={app} path={path+component.uuid+"/"} addState={addState}/>
-            {/if}
-        {/each}
-    {/if}
+    <div class="absolute" bind:this={appContainer}>
+        {#if app}
+            {#each app.data.components as component}
+                {#if component.type === "note"}
+                    <Note app={app} path={path+component.uuid+"/"} addState={addState}/>
+                {:else if component.type === "image"}
+                    <Image app={app} path={path+component.uuid+"/"} addState={addState}/>
+                {:else if component.type === "video"}
+                    <Video app={app} path={path+component.uuid+"/"} addState={addState}/>
+                {/if}
+            {/each}
+        {/if}
+    </div>
     <AppSideBar addContainer={addContainer} addNote={addNote}/>
     <p class="fixed left-5 bottom-5 text-white/30">Last save: {saveAgo} seconds ago</p>
 </div>

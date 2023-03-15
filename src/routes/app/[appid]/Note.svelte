@@ -8,8 +8,8 @@
     export let addState;
 
     let textarea;
-    let hiddenDiv;
     let component: any;
+    let placeholder;
 
     function getComponent() {
         component = app.data;
@@ -48,9 +48,14 @@
         const minFontSize = 10;
         const fontSize = Math.round(Math.min(maxFontSize, Math.max(minFontSize, 0.1 * containerHeight)));
         textarea.style.fontSize = fontSize + "px";
+        placeholder.style.fontSize = fontSize + "px";
 
-        const padding = Math.round((containerHeight) / 2.5);
-        textarea.style.paddingTop = padding + "px";
+        if (textarea.innerHTML === "" || textarea.innerHTML === "<br>") {
+            textarea.innerHTML = "<br>";
+            placeholder.innerHTML = "some text";
+        } else {
+            placeholder.innerHTML = "";
+        }
     }
 
     onMount(() => {
@@ -58,13 +63,20 @@
         setInterval(() => {
             resizeFont();
         }, 200);
+
+        setTimeout(() => {
+            textarea.oninput = () => {
+                resizeFont();
+            };
+        }, 1000);
     });
 </script>
 
 <Component path={path} app={app} focus={focus} disable={disable} enable={enable} addState={addState}>
     {#if component}
-            <textarea class="w-full h-full outline-none bg-transparent text-center duration-500"
-                      style="resize: none; overflow: hidden" bind:this={textarea}
-                      bind:value={component.content} placeholder="some text"></textarea>
+        <div class="w-full h-full outline-none bg-transparent justify-center content-center text-center flex flex-col duration-200 focus:outline-white outline-1 rounded-sm"
+             style="resize: none; overflow: hidden" bind:this={textarea}
+             bind:innerHTML={component.content} contenteditable="true"></div>
+        <div bind:this={placeholder} class="left-0 top-0 text-white/30 w-full h-full absolute bg-transparent justify-center content-center text-center flex flex-col">some text</div>
     {/if}
 </Component>

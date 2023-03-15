@@ -69,11 +69,6 @@
         left = pos.x;
         top = pos.y;
 
-        if (component.title !== "main") {
-            left += app.data.pos.x;
-            top += app.data.pos.y;
-        }
-
         requestAnimationFrame(() => {
             div.style.transform = `translate(${left}px, ${top}px)`;
         })
@@ -126,6 +121,7 @@
             component.size.width = divStartWidth + event.clientX - startX;
             component.size.height = divStartHeight + event.clientY - startY;
             document.body.style.cursor = 'nwse-resize';
+            updateComponent();
         };
 
         document.onmouseup = () => {
@@ -134,11 +130,6 @@
             document.body.style.cursor = 'auto';
             addState();
         };
-    }
-
-    function autoUpdate() {
-        updateComponent();
-        setTimeout(() => autoUpdate(), 1000 / 60)
     }
 
     function deleteComponent() {
@@ -212,7 +203,6 @@
     onMount(() => {
         getComponent();
         updateComponent();
-        autoUpdate();
 
         initMouse();
     })
