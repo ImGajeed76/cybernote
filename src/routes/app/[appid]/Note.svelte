@@ -6,6 +6,7 @@
     export let path: string;
     export let app: App;
     export let addState;
+    export let appContainer;
 
     let textarea;
     let component: any;
@@ -27,6 +28,7 @@
         textarea.disabled = true;
         textarea.style.cursor = "context-menu";
         textarea.style.pointerEvents = "none";
+        textarea.blur();
     }
 
     function enable() {
@@ -65,6 +67,7 @@
         }, 200);
 
         setTimeout(() => {
+            disable();
             textarea.oninput = () => {
                 resizeFont();
             };
@@ -72,11 +75,11 @@
     });
 </script>
 
-<Component path={path} app={app} focus={focus} disable={disable} enable={enable} addState={addState}>
+<Component path={path} app={app} focus={focus} disable={disable} enable={enable} addState={addState} appContainer={appContainer}>
     {#if component}
         <div class="w-full h-full outline-none bg-transparent justify-center content-center text-center flex flex-col duration-200 focus:outline-white outline-1 rounded-sm"
              style="resize: none; overflow: hidden" bind:this={textarea}
              bind:innerHTML={component.content} contenteditable="true"></div>
-        <div bind:this={placeholder} class="left-0 top-0 text-white/30 w-full h-full absolute bg-transparent justify-center content-center text-center flex flex-col">some text</div>
+        <div bind:this={placeholder} class="left-0 top-0 text-white/30 w-full h-full absolute bg-transparent justify-center content-center text-center flex flex-col" style="pointer-events: none">some text</div>
     {/if}
 </Component>

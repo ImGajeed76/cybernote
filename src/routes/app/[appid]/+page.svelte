@@ -10,6 +10,8 @@
     import Video from "./Video.svelte";
     import {saveApps} from "../../../lib/database";
 
+    import ContextMenu from "../ContextMenu.svelte";
+
 
     let app = $apps.find(app => app.uuid === $page.params.appid);
     apps.subscribe(apps => {
@@ -270,22 +272,53 @@
         appContainer.style.left = `${app.data.pos.x}px`;
         appContainer.style.top = `${app.data.pos.y}px`;
     });
+
+    let contextOptions = [
+        {
+            label: "New Note",
+            color: "primary"
+        },
+        {
+            label: "Save",
+            color: "primary"
+        }
+    ];
+
+    let onContextSelect = (i, event) => {
+        switch (contextOptions[i].label) {
+            case "New Note":
+                addNote(null, {x: event.clientX, y: event.clientY});
+                break;
+            case "Save":
+                save();
+                break;
+            default:
+                break;
+        }
+    }
+
+    let reload = false;
+
 </script>
+
+<ContextMenu controller={bg} options={contextOptions} onselect={onContextSelect}/>
 
 <div>
     <div class="bg-pattern w-screen h-screen absolute" bind:this={bgPattern}></div>
     <div class="absolute w-screen h-screen duration-200" bind:this={bg}></div>
     <div class="absolute" bind:this={appContainer}>
-        {#if app}
+        {#if app && !reload}
             {#each app.data.components as component}
                 {#if component.type === "note"}
-                    <Note app={app} path={path+component.uuid+"/"} addState={addState}/>
+                    <Note app={app} path={path+component.uuid+"/"} addState={addState} appContainer={{appContainer, reload}}/>
                 {:else if component.type === "image"}
-                    <Image app={app} path={path+component.uuid+"/"} addState={addState}/>
+                    <Image app={app} path={path+component.uuid+"/"} addState={addState} appContainer={{appContainer, reload}}/>
                 {:else if component.type === "video"}
-                    <Video app={app} path={path+component.uuid+"/"} addState={addState}/>
+                    <Video app={app} path={path+component.uuid+"/"} addState={addState} appContainer={{appContainer, reload}}/>
                 {/if}
             {/each}
+        {:else}
+            <p>RELOAD</p>
         {/if}
     </div>
     <AppSideBar addContainer={addContainer} addNote={addNote}/>

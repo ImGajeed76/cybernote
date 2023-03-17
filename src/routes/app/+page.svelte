@@ -38,6 +38,7 @@
                 components: []
             }
         });
+        $apps = [...$apps];
     }
 
     let loggedIn = false;

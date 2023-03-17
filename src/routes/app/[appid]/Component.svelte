@@ -1,6 +1,9 @@
 <script lang="ts">
     import type {App} from "../../../store";
     import {onMount} from "svelte";
+    import ContextMenu from "../ContextMenu.svelte";
+    import {apps} from "../../../store";
+    import {saveApps} from "../../../lib/database";
 
     export let path: string;
     export let app: App;
@@ -9,10 +12,15 @@
         div.focus();
     };
 
-    export let disable: () => void = () => {return};
-    export let enable: () => void = () => {return};
+    export let disable: () => void = () => {
+        return
+    };
+    export let enable: () => void = () => {
+        return
+    };
 
     export let addState;
+    export let appContainer;
 
     let component;
 
@@ -79,6 +87,7 @@
 
     function updateComponent() {
         if (!div) return;
+        if (component.deleted) return;
         setPos(component.pos);
         setSize(component.size);
         lastAppSize = {width: app.data.size.width, height: app.data.size.height};
@@ -132,8 +141,8 @@
         };
     }
 
-    function deleteComponent() {
-        component = app.data;
+    async function deleteComponent() {
+        let component = app.data;
         if (!path) return;
         const splitPath = path.split("/");
         splitPath.pop();
@@ -142,7 +151,14 @@
                 component = component.components.find((component) => component.uuid === splitPath[i]);
             }
         }
-        component.components = component.components.filter((component) => component.uuid !== splitPath[splitPath.length - 1]);
+
+        if (component.components) {
+            component.components = component.components.filter((component) => component.uuid !== splitPath[splitPath.length - 1]);
+        }
+
+        appContainer.reload = true;
+
+        addState();
     }
 
     function initMouse() {
@@ -179,8 +195,6 @@
             div.style.cursor = 'context-menu';
         };
 
-
-
         resize.onmouseenter = () => {
             div.style.cursor = "nwse-resize";
         };
@@ -192,7 +206,6 @@
         }
 
 
-
         div.addEventListener("keydown", (event) => {
             if (event.key === "Delete" && div === document.activeElement) {
                 deleteComponent();
@@ -202,11 +215,40 @@
 
     onMount(() => {
         getComponent();
-        updateComponent();
-
-        initMouse();
+        if (!component.deleted) {
+            updateComponent();
+            initMouse();
+        } else {
+            div.style.hidden = true;
+        }
     })
+
+    let contextOptions = [
+        {
+            label: "Duplicate",
+            color: "primary"
+        },
+        {
+            label: "Delete",
+            color: "error"
+        },
+    ]
+
+    let onContextSelected = (i) => {
+        switch (contextOptions[i].label) {
+            case "Duplicate":
+                console.log("Duplicate");
+                break;
+            case "Delete":
+                deleteComponent();
+                break;
+            default:
+                break;
+        }
+    }
 </script>
+
+<ContextMenu controller={div} options={contextOptions} onselect={onContextSelected}/>
 
 <div bind:this={div}
      class="bg-neutral absolute shadow-2xl outline outline-0 outline-white focus:outline-1 rounded duration-200"

@@ -11,6 +11,7 @@ export interface Component {
     pos: {
         x: number,
         y: number,
+        z?: number,
     },
     size: {
         width: number,
@@ -22,6 +23,7 @@ export interface Component {
     content?: string,
     components?: Component[],
     src?: string,
+    deleted?: boolean,
 }
 
 export const apps = writable<App[]>([]);

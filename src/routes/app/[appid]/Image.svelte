@@ -7,6 +7,8 @@
     export let app: App;
     export let addState;
 
+    export let appContainer;
+
     let component: any;
     let image;
     function getComponent() {
@@ -37,7 +39,7 @@
     });
 </script>
 
-<Component path={path} app={app} addState={addState}>
+<Component path={path} app={app} addState={addState} appContainer={appContainer}>
     {#if component}
         <img src={component.src} alt="image" class="rounded" style="width: 100%; height: 100%; object-fit: cover" bind:this={image}>
     {/if}

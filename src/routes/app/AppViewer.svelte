@@ -1,11 +1,24 @@
 <script lang="ts">
     import {onMount} from "svelte";
     import {goto} from "$app/navigation";
+    import ContextMenu from "./ContextMenu.svelte";
 
     export let apps;
     export let index;
 
     let card;
+
+    let options = [
+        {
+            label: "Delete",
+            color: "error"
+        }
+    ];
+    let onselect = (i) => {
+        if (options[i].label === "Delete") {
+            $apps.splice(index, 1);
+        }
+    }
 
     onMount(() => {
         card.ondblclick = (event) => {
@@ -22,8 +35,10 @@
     })
 </script>
 
+<ContextMenu options={options} controller={card} onselect={onselect}/>
+
 <div class="card card-compact w-96 bg-base-100 shadow-xl m-10 hover:shadow-2xl duration-300" bind:this={card}
-     tabindex="0" style="cursor: pointer;">
+     tabindex="0" style="cursor: pointer">
     <figure class="hover:shadow-xl duration-300">
         <div class="w-full h-44 relative">
             <img class="object-cover w-full h-full"
