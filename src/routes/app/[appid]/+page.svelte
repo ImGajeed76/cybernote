@@ -322,7 +322,7 @@
         {/if}
     </div>
     <AppSideBar addContainer={addContainer} addNote={addNote}/>
-    <p class="fixed left-5 bottom-5 text-white/30">Last save: {saveAgo} seconds ago</p>
+    <p class="fixed left-2 bottom-2 text-white/30">Last save: {saveAgo} seconds ago</p>
 </div>
 
 <style>
