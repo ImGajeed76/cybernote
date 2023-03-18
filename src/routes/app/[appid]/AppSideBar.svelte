@@ -21,9 +21,9 @@
     })
 </script>
 
-<div class="absolute h-screen grid items-center">
-    <div class="rounded-box bg-neutral w-20 h-[60vh] m-10 shadow-2xl">
-        <button class="w-full p-5 rounded hover:shadow-2xl duration-200 hover:p-6" on:click={addContainer}>
+<div class="absolute min-h-max p-2 grid items-center">
+    <div class="rounded-box bg-neutral w-20 h-full shadow-2xl">
+        <button class="w-full p-5 rounded-box hover:shadow-[inset_0_0_25px_-24px_#fff] duration-200 hover:p-6" on:click={addContainer}>
             <svg fill="#ffffff" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
@@ -34,7 +34,7 @@
             </svg>
         </button>
 
-        <button class="w-full p-5 rounded hover:shadow-2xl duration-100 hover:p-6" on:click={addNote} bind:this={note}>
+        <button class="w-full p-5 rounded-box hover:shadow-[inset_0_0_25px_-24px_#fff] duration-100 hover:p-6" on:click={addNote} bind:this={note}>
             <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
                 <g id="SVGRepo_bgCarrier" stroke-width="0"></g>
                 <g id="SVGRepo_tracerCarrier" stroke-linecap="round" stroke-linejoin="round"></g>
